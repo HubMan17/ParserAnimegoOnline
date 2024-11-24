@@ -8,7 +8,7 @@ url = r"https://animego.online/"
 
 maxCountTitles = 5744
 
-count = 5601
+count = 0
 while True:
 
     if count == maxCountTitles:
