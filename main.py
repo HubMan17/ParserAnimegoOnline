@@ -2,6 +2,7 @@ import json
 
 import requests
 from bs4 import BeautifulSoup
+from fake_useragent import UserAgent
 
 
 url = r"https://animego.online/"
@@ -9,15 +10,19 @@ url = r"https://animego.online/"
 maxCountTitles = 5744
 
 count = 0
+
+with open("data.json", "w", encoding="utf-8") as file:
+    file.write("[\n")
+
 while True:
 
-    if count == maxCountTitles:
+    if count == maxCountTitles + 1:
         break
 
     print(f"Anime id: {count}/{maxCountTitles}")
 
 
-    page = requests.get(url + str(count))
+    page = requests.get(url + str(count), headers={"User-Agent": UserAgent().chrome})
     soup = BeautifulSoup(page.text, "html.parser")
 
     # title name
@@ -91,24 +96,6 @@ while True:
     for description in descriptions:
         descriptionAnime += description.text + "\n"
 
-    # print(f"""
-    #       {titlePage}
-    #       {seriesCount}
-    #       {statusAnime}
-    #       {typeAnime}
-    #       {releaseDate}
-    #       {directorAnimeTitle} {directorAnime}
-    #       {studioAnimeTitle} {studioAnime}
-        
-    #       {otherNamesTitles} {otherNames}
-        
-    #       {subtitlesTitle} {subtitles}
-        
-    #       {genresTitle} {ganres}
-        
-    #       {descriptionAnime}
-    #       """)
-
     jsonData = {
         "id": count,
         "title": titlePage,
@@ -128,4 +115,11 @@ while True:
     with open("data.json", "a", encoding="utf-8") as file:
         json.dump(jsonData, file, indent=4, ensure_ascii=False)
         
+        if count != maxCountTitles:
+            file.write(",")
+        
     count += 1
+    
+    
+with open("data.json", "a", encoding="utf-8") as file:
+    file.write("\n]")
